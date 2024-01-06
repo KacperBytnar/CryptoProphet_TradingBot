@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script> <!-- Add this line for Socket.IO -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+
+    <title>CryptoProhet - an AI enhanced trading bot</title>
+</head>
+
+<body id="app">
+    <div id="banner">
+        <header>
+            <h1>CryptoProhet - an AI enhanced trading bot</h1>
+        </header>
+        <img src="{{ url_for('static', filename='images/ZealandLogo.png') }}" alt="Banner Image" style="max-width: 100%; height: auto;"/>
+        <img src="{{ url_for('static', filename='images/botLogo_35.png') }}" alt="Banner Image" style="max-width: 100%; height: auto;"/>
+
+
+        <!-- Start and Stop Trading buttons -->
+        <div style="margin-top: 10px;">
+            <button v-on:click="startTrading" class="btn btn-success">Start Trading</button>
+            <button v-on:click="stopTrading" class="btn btn-danger">Stop Trading</button>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="trade-list" class="card-deck"></div> <!-- Add a container for the trade cards -->
+    </div>
+
+    <footer>
+        <p>&copy; Sjællands Erhvervsakademi, Semester 5, Computer Science, January of 2024</p>
+    </footer>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        socket.on('trade_report', function(data) {
+            var tradeList = document.getElementById('trade-list');
+    
+            // Create a Bootstrap card element
+            var card = document.createElement('div');
+            card.className = 'card m-3';
+            card.style = 'min-width: 22rem; height: auto;';
+            card.style.backgroundColor = "#fff9c4";
+
+    
+            // Create card header
+            var cardHeader = document.createElement('div');
+            cardHeader.className = 'card-header';
+            cardHeader.textContent = data.time + ' | ' + data.going;
+            card.appendChild(cardHeader);
+    
+            // Create card body
+            var cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+    
+            // Format the trade report data
+            var reportText = data.time + ' | Base_Units = ' + data.base_units +
+                ' | Quote_Units = ' + data.quote_units + ' | Price = ' + data.price + '<br>' +
+                data.time + ' | Profit = ' + data.real_profit + ' | CumProfits = ' + data.cum_profits;
+    
+            // Create a paragraph element for the trade report
+            var reportParagraph = document.createElement('p');
+            reportParagraph.className = 'card-text';
+            reportParagraph.innerHTML = reportText;
+            cardBody.appendChild(reportParagraph);
+    
+            card.appendChild(cardBody);
+    
+            // Append the card to the trade list
+            tradeList.appendChild(card);
+        });
+              // Example trade report data
+              var exampleTradeReport = {
+            Time: "2024-01-05 23:23:00.776000",
+            Going: "GOING LONG",
+            Details: "Base_Units = 0.01 | Quote_Units = 441.6624191 | Price = 44166.24191",
+            Profit: "0",
+            CumProfits: "0.0"
+        };
+
+        // Append an example trade card
+        appendTradeCard(exampleTradeReport);
+    </script>
+
+    <script src="js/index.js"></script>
+</body>
+
+</html>
