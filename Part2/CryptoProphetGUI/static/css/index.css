@@ -1,0 +1,107 @@
+html, body{
+    background-color: rgb(255, 255, 255);
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+#container{
+    width: 100%;
+    height: 67%;
+    margin: 0px;
+    padding:0px;
+    background-color: rgb(219, 226, 191);
+    text-align: left; /* Align text to the left */
+    justify-content: left;
+    
+}
+#container2{
+    width: 300px;
+    height: 67%;
+    margin: 0px;
+    padding:0px;
+    margin-left:110px;
+    position: absolute;
+    float: left;
+    background-color: rgb(255, 255, 113);
+    font:"Comic Sans MS";
+    text-align: left; /* Align text to the left */
+    justify-content: left;
+    
+}
+.btn{
+    width: 240px;
+    height: 80px;
+    margin-bottom: -20px;
+}
+.btn :nth-child(){
+    background-color: rgb(191, 113, 255)
+}
+.btn-shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+.card {
+    padding: 0;
+    width: 500px; /* Set a fixed width for the card */
+    height: 400px; /* Set a fixed height for the card */
+    background-color: #fff9c4;
+    float: left;
+    vertical-align: top; /* Align cards at the top of the line */
+    font-family: "Poppins";
+    font-size: 26px;
+}
+.card-body {
+    padding: 10px;
+}
+.btn-shadow:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+.card-deck img{
+    width: 70px;
+    height: 100px;
+    margin: auto;
+}
+
+.card-top{
+    justify-content: center;
+    text-align: center;
+    font-family: "Comic Sans MS";
+}
+#banner{
+    height: 33%;
+    width: 100%;
+    background-color: rgb(255, 255, 113);
+    font:"Comic Sans MS";
+}
+header {
+    height: 70px;
+    background-color: rgb(0, 0, 0);
+    text-align: center;
+    margin: auto;
+    font: "Poppins";
+    color:yellow;
+    width: 100%;
+    border-bottom-left-radius: 100%;
+    border-bottom-right-radius: 100%;
+    font-family: "Comic Sans MS";
+}
+
+footer {
+    background-color: rgb(255, 255, 113);
+    height: 45px;
+    text-align: right;
+    font-weight: bold;
+    bottom: 0;
+    float: right;
+    position:absolute;
+    font-size: 32px;
+    font-family: "Poppins";
+}
+#trading-header{
+    margin-top: 30px;
+}

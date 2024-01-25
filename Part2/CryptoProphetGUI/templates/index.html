@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+
+    <title>CryptoProhet - an AI enhanced trading bot</title>
+</head>
+
+<body id="app">
+    <div id="banner">
+        <header>
+            <h1>CryptoProhet - an AI enhanced trading bot</h1>
+        </header>
+        <img src="{{ url_for('static', filename='images/ZealandLogo.png') }}" alt="Banner Image" style="max-width: 500px; height: 150px; margin-left: 20px; margin-top: 19px; float: left;"/>
+        <img src="{{ url_for('static', filename='images/botLogo_355.png') }}" id="spin" alt="Banner Image" style="max-width: 110%; height: 350px; float:right"/>
+
+        <div style="margin-top: 20px; padding-left: 950px;">
+            <button v-on:click="startTrading" class="btn btn-success btn-lg btn-shadow" id="start-trading-btn">Start Trading</button>
+            <button v-on:click="stopTrading" class="btn btn-danger btn-lg btn-shadow " style="margin-left: 20px;" id="stop-trading-btn">Stop Trading</button>
+            <button v-on:click="switchToAI" class="btn btn-primary btn-lg btn-shadow" style="margin-left: 20px; width:269px; height:100px; border-radius: 360px;" id="switch-trading-btn">
+                <img src="{{ url_for('static', filename='images/icon.png') }}" alt="Your Logo" style="width: 150px; height: 70px; margin-right: 5px; float: left;">
+                AI Strategy!
+            </button>
+        </div>
+
+        <h1 style="font: Poppins; text-align: center; margin-top:20px; padding-right: 50px; text-align: center;"><p id="trading-header">Ready to start trading BTCUSDT on 1m interval with baseline Short-Long Strategy</p></h1>
+        <span>
+            <p id="cum-profits" style="background-color: rgb(255, 255, 113); height: auto; padding: 30px; float: left; width: 1000px; font-size: 39px; padding-bottom: 0px;;" class="cum-profits">Total Profits ($): {{ cum_profits }}</p>
+            <p id="cum-profits2" style="background-color: rgb(255, 255, 113); height: auto; padding: 30px; float: left; width:500px; font-size: 39px; padding-bottom: 0px;;" class="cum-profits">BTC Balance: 1.02</p> </p>
+            <p id="cum-profits2" style="background-color: rgb(255, 255, 113); height: auto; padding: 30px; float: left; width: 500px; font-size: 39px; padding-bottom: 0px;;" class="cum-profits">USD Balance: 9074.497$ </p>
+
+        </span>
+
+    </div>
+
+    <div id="container">
+        <div id="trade-list" class="card-deck" style="padding-left: 0px; margin-left: 0px; float: left;"></div> <!-- Add a container for the trade cards -->
+    </div>
+
+    <footer>
+        <p>&copy; Sjællands Erhvervsakademi, Semester 5, Computer Science, January of 2024</p>
+    </footer>
+    <style>
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+</style>
+    <script src="https://cdn.socket.io/4.1.3/socket.io.min.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+    
+        var headerElement = document.getElementById('trading-header');
+        var logoElement = document.getElementById('spin');
+
+        document.getElementById('start-trading-btn').addEventListener('click', function() {
+            // Call the start trading route when the button is clicked
+            axios.get('/start-trading')
+                .then(function(response) {
+                    headerElement.textContent = "Currently trading BTC-USDT on 1m interval with baseline Short-Long Strategy";
+                    console.log(response.data);  // Log the response (optional)
+                    logoElement.style.animation="rotate 3s linear infinite";
+
+                    headerElement.style.color = 'black'; // Change the color to red
+                })
+                .catch(function(error) {
+                    console.error(error);
+                });
+        });
+        document.getElementById('switch-trading-btn').addEventListener('click', function() {
+            // Call the start trading route when the button is clicked
+            axios.get('/start-trading')
+                .then(function(response) {
+                    headerElement.innerHTML = "Currently trading BTC-USDT on 1m interval using AI Empowered Breakout Strategy";
+                    console.log(response.data);  // Log the response (optional)
+                    headerElement.style.color = 'blue'; // Change the color to red
+
+                })
+                .catch(function(error) {
+                    console.error(error);
+                });
+        });
+        document.getElementById('stop-trading-btn').addEventListener('click', function() {
+    // Call the stop trading route when the button is clicked
+    axios.get('/stop-trading')
+        .then(function(response) {
+            headerElement.innerHTML = "Trading has been stopped";
+            headerElement.style.color = 'red'; // Change the color to red
+            logoElement.style.animation="rotate 30000000s linear infinite";
+
+
+            console.log(response.data);  // Log the response (optional)
+        })
+        .catch(function(error) {
+            console.error(error);
+        });
+});
+    </script>
+
+<script>
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('trade_report', function (data) {
+        var tradeList = document.getElementById('trade-list');
+
+        var cumProfitsElement = document.getElementById('cum-profits');
+        cumProfitsElement.innerHTML = data.time + ' | CumProfits: ' + data.cum_profits;
+        
+        // var btc = document.getElementById('cum-profits2');
+        // btc.innerHTML = 'Total BTC: ' + data.btc_balance;
+
+        // var usdt = document.getElementById('cum-profits3');
+        // usdt.innerHTML = 'Total USD: ' + data.usd_balance;
+        
+        // Apply different colors based on CumProfits value
+        if (data.cum_profits > 0) {
+            cumProfitsElement.style.color = 'green';
+        } else if (data.cum_profits === 0) {
+            cumProfitsElement.style.color = 'blue';
+        } else {
+            cumProfitsElement.style.color = 'red';
+        }
+
+        // Create a Bootstrap row
+        var row = document.createElement('div');
+        row.className = 'row justify-content-start'; // Align cards to the left top corner
+
+        row.className = 'row';
+
+        // Create a Bootstrap column for each card
+        var col = document.createElement('div');
+        col.className = 'col-md-4'; // Adjust the column size as needed
+
+        // Create a Bootstrap card element
+        var card = document.createElement('div');
+        card.className = 'card m-3';
+
+        // Create card header
+        var cardHeader = document.createElement('div');
+        cardHeader.className = 'card-header';
+        cardHeader.textContent = data.time + ' | ' + data.going;
+        card.appendChild(cardHeader);
+
+        // Create card body
+        var cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+
+        // Format the trade report data
+        var reportText ='Base_Units = ' + data.base_units + 
+            '</br>Quote_Units = ' + data.quote_units + '</br>Price = ' + data.price + '<br>' +
+            data.time + '</br>Profit = ' + data.real_profit + '</br>CumProfits = ' + data.cum_profits;
+
+        // Create a paragraph element for the trade report
+        var reportParagraph = document.createElement('p');
+        reportParagraph.className = 'card-text';
+        reportParagraph.innerHTML = reportText;
+        cardBody.appendChild(reportParagraph);
+
+        card.appendChild(cardBody);
+        col.appendChild(card);
+        row.appendChild(col);
+
+        // Append the row to the trade list
+        tradeList.appendChild(row);
+    });
+</script>
+
+</body>
+
+</html>
